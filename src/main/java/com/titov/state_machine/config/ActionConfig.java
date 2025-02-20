@@ -30,4 +30,16 @@ public class ActionConfig {
         return ctx -> System.out.println(
                 "Exit " + ctx.getSource().getId() + " -> " + ctx.getTarget().getId());
     }
+
+    @Bean
+    public Action<String, String> executeAction() {
+        return ctx -> {
+            int approvals = (int) ctx.getExtendedState().getVariables()
+                    .getOrDefault("approvalCount", 0);
+            approvals++;
+            ctx.getExtendedState().getVariables()
+                    .put("approvalCount", approvals);
+            log.info(String.valueOf(approvals));
+        };
+    }
 }

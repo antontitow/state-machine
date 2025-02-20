@@ -17,6 +17,7 @@ import java.util.HashSet;
 public class SimpleStateMachineConfiguration
         extends StateMachineConfigurerAdapter<String, String> {
     private final ActionConfig actionConfig;
+    private final GuardConfig guardConfig;
     private final StateMachineListener stateMachineListener;
 
     public static final HashSet STATES = new HashSet<>(Arrays.asList("S1", "S2", "S3"));
@@ -43,13 +44,20 @@ public class SimpleStateMachineConfiguration
 
         transitions.withExternal()
                 .source("SI").target("S1")
-                .event("E1")
-                .action(actionConfig.initAction(), actionConfig.errorAction())
-                .and().withExternal()
-                .source("S2").target("S1").event("E1").and()
-                .withExternal()
-                .source("S1").target("S2").event("E2").and()
-                .withExternal()
-                .source("S2").target("SF").event("END");
+                    .event("E1").guard(guardConfig.simpleGuard())
+                    .action(actionConfig.initAction(), actionConfig.errorAction()).action(actionConfig.executeAction())
+                    .and().withExternal()
+                .source("S2").target("S1")
+                    .event("E1")
+                    .action(actionConfig.executeAction())
+                    .guard(guardConfig.simpleGuard())
+                    .and().withExternal()
+                .source("S1").target("S2")
+                    .event("E2")
+                    .action(actionConfig.executeAction())
+                    .and().withExternal()
+                .source("S2").target("SF")
+                    .action(actionConfig.executeAction())
+                    .event("END");
     }
 }
