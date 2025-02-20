@@ -1,11 +1,16 @@
 package com.titov.state_machine.state_machine;
 
 import com.titov.state_machine.config.BuilderConfig;
+import com.titov.state_machine.model.Events;
+import com.titov.state_machine.model.States;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.StateMachineBuilder;
 import org.springframework.stereotype.Component;
+
+import static com.titov.state_machine.model.Events.SIFORK;
+import static com.titov.state_machine.model.States.*;
 
 @Component
 @Slf4j
@@ -13,17 +18,17 @@ import org.springframework.stereotype.Component;
 public class DocStateMachineBuilder {
     private final BuilderConfig builderConfig;
 
-    public StateMachine<String, String> initMachine() throws Exception {
-        StateMachineBuilder.Builder<String, String> builder
+    public StateMachine<States, Events> initMachine() throws Exception {
+        StateMachineBuilder.Builder<States, Events> builder
                 = StateMachineBuilder.builder();
         builder.configureStates()
                 .withStates()
-                .initial("SI")
+                .initial(SI)
 
-                .and().withStates().fork("FORK")
-                    .and().withStates().parent("FORK").initial("SUB1").state("SUB11").state("SUB12")
-                    .and().withStates().parent("FORK").initial("SUB2").state("SUB21").state("SUB22")
-                .and().withStates().join("JOIN")
+                .and().withStates().fork(FORK)
+                    .and().withStates().parent(FORK).initial(SUB1).state(SUB11).state(SUB12)
+                    .and().withStates().parent(FORK).initial(SUB2).state(SUB21).state(SUB22)
+                .and().withStates().join(JOIN)
 
         //FORK
 //                .fork("SFork")
@@ -70,11 +75,11 @@ public class DocStateMachineBuilder {
         ;
 
         builder.configureTransitions()
-                .withExternal().source("SI").target("FORK").event("SIFORK")
-                .and().withFork().source("FORK").target("SUB1").target("SUB2")
-                .and().withExternal().source("SUB1").target("SUB11").event("SUB11")
-                .and().withExternal().source("SUB2").target("SUB22").event("SUB22")
-                .and().withJoin().source("SUB11").source("SUB22").target("JOIN");
+                .withExternal().source(SI).target(FORK).event(SIFORK)
+                .and().withFork().source(FORK).target(SUB1).target(SUB2)
+                .and().withExternal().source(SUB1).target(SUB11).event(Events.SUB11)
+                .and().withExternal().source(SUB2).target(SUB22).event(Events.SUB22)
+                .and().withJoin().source(SUB11).source(SUB22).target(JOIN);
 //                .withExternal()
 //                .source("SI").target("SFork").event("FORK")
 //                .and().withFork().source("SFork")

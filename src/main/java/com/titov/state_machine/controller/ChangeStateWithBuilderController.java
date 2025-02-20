@@ -1,5 +1,7 @@
 package com.titov.state_machine.controller;
 
+import com.titov.state_machine.model.Events;
+import com.titov.state_machine.model.States;
 import com.titov.state_machine.state_machine.DocStateMachineBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.statemachine.StateMachine;
@@ -13,7 +15,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 public class ChangeStateWithBuilderController {
-    private final StateMachine<String, String> stateMachine;
+    private final StateMachine<States, Events> stateMachine;
 
     public ChangeStateWithBuilderController(DocStateMachineBuilder docStateMachineBuilder) throws Exception {
         this.stateMachine = docStateMachineBuilder.initMachine();
@@ -25,7 +27,7 @@ public class ChangeStateWithBuilderController {
         log.info("----");
         log.info("event: " + event);
         log.info("current state: " + getState());
-        stateMachine.sendEvent(event);
+        stateMachine.sendEvent(Events.valueOf(event));
         log.info("new state: " + getState());
 
         log.info("----");
